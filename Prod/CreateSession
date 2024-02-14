@@ -1,29 +1,20 @@
 <?php
-	include("request.class.php");
-	$hdr = md5("MoM");
+	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
+
+	if(!@is_array($_POST)) exit;
 
 	$jsonString = file_get_contents("php://input");
-	$myFile = "/tmp/createsession.txt";
-	file_put_contents($myFile,$jsonString);
-	$req = json_decode($jsonString, false);
+	$resp = json_decode($jsonString, false);
 
-	$resp = new Application();
-	foreach ($req as $key => $value)
-	{
-		$resp->{$key} = $value;
-	}
-	$resp->SessionId = $hdr;
+	$serverid = $resp->Settings->MARS_SERVERID->Value;
+	EditServer($serverid, $resp->IpAddress, $resp->Port);
+	$resp->SessionId = GetSessionId($serverid);
 	$resp->IpAddress = $_SERVER['REMOTE_ADDR'];
-	$json = json_encode($resp);
 
-	//header("SessionId: $hdr");
+	$json = json_encode($resp, false);
+	//file_put_contents("/tmp/resp.log", $json);
+
 	header('Content-Type: application/json; charset=utf-8');
 	header("Content-Length: " . strlen($json));
 	echo $json;
-	file_put_contents("/tmp/resp.log", $json);
-
-	//file_put_contents("/tmp/post.log", print_r($_POST, true));
-	//file_put_contents("/tmp/gpc.log", print_r($_REQUEST, true));
-	//file_put_contents("/tmp/get.log", print_r($_GET, true));
-	//file_put_contents("/tmp/hdr.log", print_r(getallheaders(), true));
 ?>

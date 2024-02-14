@@ -1,6 +1,5 @@
 <?php
-	//GetAllSessions?platform=STEAM&build=114912
-	include("request.class.php");
+	include(dirname(__DIR__) . "/config/mars.inc.php");
 	$hdr = md5("MoM");
 
 	if (!function_exists('getallheaders'))

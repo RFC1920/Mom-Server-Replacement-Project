@@ -1,0 +1,44 @@
+<?php
+	//GetAllSessions?platform=STEAM&build=114912
+	include("request.class.php");
+	$hdr = md5("MoM");
+
+	if (!function_exists('getallheaders'))
+	{
+		function getallheaders()
+		{
+			$headers = [];
+			foreach ($_SERVER as $name => $value)
+			{
+				if (substr($name, 0, 5) == 'HTTP_')
+				{
+					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+				}
+			}
+			return $headers;
+		}
+	}
+
+	file_put_contents("/tmp/server.log", print_r($_SERVER, true));
+	file_put_contents("/tmp/hdr.log", print_r(getallheaders(), true));
+	$kaString = file_get_contents("php://input");
+	$myFile = "/tmp/getall.log";
+	file_put_contents($myFile,$kaString);
+
+	$jsonString = file_get_contents("/tmp/resp.log");
+	$req = json_decode($jsonString, false);
+
+	$resp = new Application();
+	foreach ($req as $key => $value)
+	{
+		$resp->{$key} = $value;
+	}
+	$resp->SessionId = $hdr;
+	$json = json_encode($resp);
+
+	exit;
+	//header("SessionId: $hdr");
+	header('Content-Type: application/json; charset=utf-8');
+	header("Content-Length: " . strlen($json));
+	echo $json;
+?>

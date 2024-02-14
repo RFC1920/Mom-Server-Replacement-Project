@@ -1,0 +1,6 @@
+<?php
+	parse_str(file_get_contents('php://input'), $PATCH);
+	file_put_contents("/tmp/patch.log", print_r($PATCH, true));
+
+	//echo "OK"
+?>

@@ -1,4 +1,23 @@
 <?php
+/*
+    MoM Server Replacement Project
+    Copyright (c) 2024 RFC1920 <desolationoutpostpve@gmail.com>
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License v2.0.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+    Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+*/
+
 	$databaseFILE = dirname(__DIR__) . "/config/mars.sqlite3";
 	$database = new PDO("sqlite:" . $databaseFILE);
 
@@ -19,6 +38,22 @@
 	}
 
 	// Functions
+	if (!function_exists('getallheaders'))
+	{
+		function getallheaders()
+		{
+			$headers = [];
+			foreach ($_SERVER as $name => $value)
+			{
+				if (substr($name, 0, 5) == 'HTTP_')
+				{
+					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+				}
+			}
+			return $headers;
+		}
+	}
+
 	function EditServer($servername, $addr, $port, $sessionid = '', $enable=true)
 	{
 		global $database;

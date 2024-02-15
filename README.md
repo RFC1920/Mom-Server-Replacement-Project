@@ -1,5 +1,6 @@
-# MemoriesOfMars
-Scripts and other things for this game
+#  Mom Server Replacement Project
+
+Scripts and other things for this game.
 
 This should be considered a work in progress and partially working or garbage depending on your perspective.
 

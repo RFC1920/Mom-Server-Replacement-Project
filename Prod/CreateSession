@@ -20,6 +20,7 @@
 	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
 
 	if(!@is_array($_POST)) exit;
+	if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
 
 	$jsonString = file_get_contents("php://input");
 	$resp = json_decode($jsonString, false);

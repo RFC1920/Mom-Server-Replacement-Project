@@ -1,6 +1,6 @@
-#  Mom Server Replacement Project
+#  MoM Server Replacement Project
 
-Scripts and other things for this game.
+Scripts and other things for the game Memories of Mars by Limbic Entertainment and 505 games.
 
 This should be considered a work in progress and partially working or garbage depending on your perspective.
 

@@ -95,15 +95,69 @@
 	function GetAllServers()
 	{
 		global $database;
+		$output = array();
+
 		$stmt = $database->prepare("SELECT * FROM mom_servers");
 		$stmt->execute();
 
 		$servers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+		$i = 0;
 		foreach($servers as $server)
 		{
-			print_r($servers);
+			$output[$i] = array(
+				'Name' => $server['name'],
+				'IPAddress' => $server['ipaddress'],
+				'Port' => $server['port'],
+				"SessionId" => $server['sessionid'],
+				"NumPublicConnections" => 2,
+				"NumPrivateConnections" => 2,
+				"ShouldAdvertise" => true,
+				"AllowJoinInProgress" => true,
+				"IsLANMatch" => true,
+				"IsDedicated" => true,
+				"UsesStats" => false,
+				"AllowInvites" => true,
+				"UsesPresence" => false,
+				"AllowJoinViaPresence" => true,
+				"AllowJoinViaPresenceFriendsOnly" => false,
+				"AntiCheatProtected" => true,
+				"BuildUniqueId" => "114912",
+				"OwningUserName" => "rfcmom",
+				"Settings" => array(
+					"MapName" => array(
+						"Type" => "String",
+						"Value" => "Untitled_0"
+					),
+					"MARS_SERVERID" => array(
+						"Type" => "String",
+						"Value" => "mom_rfc_01"
+					),
+					"LIMBIC_TARGET_PLATFORMS" => array(
+						"Type" => "String",
+						"Value" => "steam"
+					),
+					"MARS_AUDIENCE" => array(
+						"Type" => "String",
+						"Value" => "MoM"
+					),
+					"MARS_GAMESERVER_MODE" => array(
+						"Type" => "String",
+						"Value" => "PVE"
+					),
+					"MARS_GAMESERVER_TYPE" => array(
+						"Type" => "Bool",
+						"Value" => true
+					),
+					"Password" => array(
+						"Type" => "Bool",
+						"Value" => true
+					)
+				)
+			);
+			$i++;
 		}
+		return $output;
 	}
 
 	//DeactivateAll();

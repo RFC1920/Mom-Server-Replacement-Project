@@ -1,6 +1,5 @@
 <?php
-	include(dirname(__DIR__) . "/config/mars.inc.php");
-	$hdr = md5("MoM");
+	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
 
 	if (!function_exists('getallheaders'))
 	{
@@ -18,25 +17,11 @@
 		}
 	}
 
-	file_put_contents("/tmp/server.log", print_r($_SERVER, true));
-	file_put_contents("/tmp/hdr.log", print_r(getallheaders(), true));
-	$kaString = file_get_contents("php://input");
-	$myFile = "/tmp/getall.log";
-	file_put_contents($myFile,$kaString);
+	$servers = GetAllServers();
 
-	$jsonString = file_get_contents("/tmp/resp.log");
-	$req = json_decode($jsonString, false);
+	$json = json_encode($servers);
+	file_put_contents("/tmp/getall", $json);
 
-	$resp = new Application();
-	foreach ($req as $key => $value)
-	{
-		$resp->{$key} = $value;
-	}
-	$resp->SessionId = $hdr;
-	$json = json_encode($resp);
-
-	exit;
-	//header("SessionId: $hdr");
 	header('Content-Type: application/json; charset=utf-8');
 	header("Content-Length: " . strlen($json));
 	echo $json;

@@ -22,6 +22,7 @@
 	if(!@htmlspecialchars($_GET["platform"]) == "STEAM") exit;
 	if(!@htmlspecialchars($_GET["build"]) == "114912") exit;
 
+
 	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
 
 	$servers = GetAllServers();
@@ -29,7 +30,77 @@
 	$json = json_encode($servers);
 	file_put_contents("/tmp/getall", $json);
 
+	$json = <<< EOF
+[
+    {
+        "SessionId": "0",
+        "NumPublicConnections": 0,
+        "NumPrivateConnections": 0,
+        "ShouldAdvertise": false,
+        "AllowJoinInProgress": true,
+        "IsLANMatch": false,
+        "IsDedicated": true,
+        "UsesStats": false,
+        "AllowInvites": true,
+        "UsesPresence": false,
+        "AllowJoinViaPresence": true,
+        "AllowJoinViaPresenceFriendsOnly": false,
+        "AntiCheatProtected": false,
+        "BuildUniqueId": "114912",
+        "OwningUserName": ""
+    },
+    {
+        "SessionId": "38",
+        "NumPublicConnections": 2,
+        "NumPrivateConnections": 0,
+        "ShouldAdvertise": false,
+        "AllowJoinInProgress": true,
+        "IsLANMatch": false,
+        "IsDedicated": true,
+        "UsesStats": false,
+        "AllowInvites": true,
+        "UsesPresence": false,
+        "AllowJoinViaPresence": true,
+        "AllowJoinViaPresenceFriendsOnly": false,
+        "AntiCheatProtected": false,
+        "BuildUniqueId": "114912",
+        "OwningUserName": "rfcmom",
+        "Settings": {
+            "MapName": {
+                "Type": "String",
+                "Value": "Untitled_0"
+            },
+            "MARS_SERVERID": {
+                "Type": "String",
+                "Value": "mom_rfc_01"
+            },
+            "LIMBIC_TARGET_PLATFORMS": {
+                "Type": "String",
+                "Value": "steam"
+            },
+            "MARS_AUDIENCE": {
+                "Type": "String",
+                "Value": "MoM"
+            },
+            "MARS_GAMESERVER_MODE": {
+                "Type": "String",
+                "Value": "PVE"
+            },
+            "MARS_GAMESERVER_TYPE": {
+                "Type": "Bool",
+                "Value": true
+            },
+            "Password": {
+                "Type": "Bool",
+                "Value": true
+            }
+        }
+    }
+]
+EOF;
 	header('Content-Type: application/json; charset=utf-8');
 	header("Content-Length: " . strlen($json));
+	//echo $json;
+
 	echo $json;
 ?>

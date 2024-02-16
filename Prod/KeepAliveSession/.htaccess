@@ -2,5 +2,6 @@ RewriteEngine on
 
 RewriteRule \.(css|jpe?g|gif|png)$ - [L]
 
-RewriteRule ^([^/\.]+)/?$ master.php?session=$1 [L]
+#RewriteRule ^([^/\.]+)/?$ master.php?session=$1 [L]
+RewriteRule ^([^/\.]+)/?$ master.php [L]
 

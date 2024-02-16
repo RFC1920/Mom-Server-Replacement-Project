@@ -27,11 +27,17 @@
 	$resp = json_decode($jsonString, false);
 
 	$serverid = $resp->Settings->MARS_SERVERID->Value;
-	EditServer($serverid, $resp->IpAddress, $resp->Port);
-	$resp->SessionId = GetSessionId($serverid);
-	$resp->IpAddress = $_SERVER['REMOTE_ADDR'];
+	$sessionid = $resp->SessionId;
+	if ($debug) `echo "Got ServerId: $serverid" >> /tmp/progress.log`;
+
+	$sessionid = EditServer($resp);
+	if ($debug) `echo "Got SessionId: $sessionid" >> /tmp/progress.log`;
+
+	$resp->SessionId = $sessionid;// GetSessionId($serverid);
+	//$resp->IpAddress = $_SERVER['REMOTE_ADDR'];
 
 	$json = json_encode($resp, false);
+	if ($debug) file_put_contents("/tmp/resp.log", $json);
 
 	header('Content-Type: application/json; charset=utf-8');
 	header("Content-Length: " . strlen($json));

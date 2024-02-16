@@ -17,12 +17,34 @@
 
     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
 */
-	//file_put_contents("/tmp/client.log", print_r($_SERVER, true));
-	if ($_SERVER['REQUEST_METHOD'] == 'PATCH')
-	{
-		parse_str(file_get_contents('php://input'), $_PATCH);
-		file_put_contents("/tmp/patch.log", print_r($_PATCH, true));
-	}
 
-	//echo "OK"
+	if ($_SERVER['REQUEST_METHOD'] === 'PATCH')
+	{
+		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
+		$x = dirname(__DIR__);
+		`echo $x >> /tmp/dirname`;
+		include(dirname(__DIR__) . "/config/mars.inc.php");
+		if ($debug) `echo "KeepAliveSession received patch request" >> /tmp/keepalivesession`;
+
+		$sessionId = $_SERVER['REQUEST_URI'];
+		$sessionId = str_replace("/Prod/KeepAliveSession/", "", $sessionId);
+		if ($debug) `echo "Got sessionid $sessionId from URI" >> /tmp/keepalivesession`;
+
+		$json;
+		if ($sessionId != "")
+		{
+			$ipaddr = $_SERVER['REMOTE_ADDR'];
+			if ($debug) `echo "KeepAliveSession for $ipaddr, $sessionId" >> /tmp/keepalivesession`;
+			KeepAliveSession($sessionId, $ipaddr);
+			$json = GetSessionData($sessionId, $ipaddr);
+			if ($debug) `echo "JSON Returning for $ipaddr, $sessionId" >> /tmp/keepalivesession`;
+		}
+
+		if ($json != "")
+		{
+			header('Content-Type: application/json; charset=utf-8');
+			header("Content-Length: " . strlen($json));
+			echo $json;
+		}
+	}
 ?>

@@ -17,8 +17,12 @@
 
     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
 */
-	parse_str(file_get_contents('php://input'), $PATCH);
-	file_put_contents("/tmp/patch.log", print_r($PATCH, true));
+	//file_put_contents("/tmp/client.log", print_r($_SERVER, true));
+	if ($_SERVER['REQUEST_METHOD'] == 'PATCH')
+	{
+		parse_str(file_get_contents('php://input'), $_PATCH);
+		file_put_contents("/tmp/patch.log", print_r($_PATCH, true));
+	}
 
 	//echo "OK"
 ?>

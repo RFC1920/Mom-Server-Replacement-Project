@@ -317,32 +317,41 @@
 		global $database;
 		$output = array();
 
-		$stmt = $database->prepare("SELECT * FROM mom_servers");
-		$stmt->execute();
+		$stmt = $database->prepare("SELECT * FROM mom_servers WHERE active=1");
+		try
+		{
+			$stmt->execute();
+		}
+		catch (PDOException $e)
+		{
+			if ($debug) file_put_contents("/tmp/getall_error", $e->getMessage());
+		}
 
-		$servers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		//$servers = $stmt->fetchAll();//PDO::FETCH_ASSOC);
 
 		$i = 0;
-		foreach($servers as $data)
+		while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
-			$output[$i] = array(
-				"SessionId" => $data[0]['sessionid'],
-				"NumPublicConnections" => $data[0]['numpub'],
-				"NumPrivateConnections" => $data[0]['numpriv'],
-				"ShouldAdvertise" => $data[0]['shouldadv'],
-				"AllowJoinInProgress" => $data[0]['allowjoin'],
-				"IsLANMatch" => $data[0]['islan'],
-				"IsDedicated" => $data[0]['isded'],
-				"UsesStats" => $data[0]['usestats'],
-				"AllowInvites" => $data[0]['allowinv'],
-				"UsesPresence" => $data[0]['usepres'],
-				"AllowJoinViaPresence" => $data[0]['allowpresjoin'],
-				"AllowJoinViaPresenceFriendsOnly" => $data[0]['allowjoinpresfr'],
-				"AntiCheatProtected" => $data[0]['anticheat'],
-				"BuildUniqueId" => $data[0]['build'],
-				"OwningUserName" => $data[0]['owner'],
-				"IpAddress" => $data[0]['ipaddress'],
-				"Port" => $data[0]['port'],
+			$serverid = $data['serverid'];
+			//if ($serverid == "") continue;
+			$output[$serverid] = array(
+				"SessionId" => $data['sessionid'],
+				"NumPublicConnections" => $data['numpub'],
+				"NumPrivateConnections" => $data['numpriv'],
+				"ShouldAdvertise" => $data['shouldadv'],
+				"AllowJoinInProgress" => $data['allowjoin'],
+				"IsLANMatch" => $data['islan'],
+				"IsDedicated" => $data['isded'],
+				"UsesStats" => $data['usestats'],
+				"AllowInvites" => $data['allowinv'],
+				"UsesPresence" => $data['usepres'],
+				"AllowJoinViaPresence" => $data['allowpresjoin'],
+				"AllowJoinViaPresenceFriendsOnly" => $data['allowjoinpresfr'],
+				"AntiCheatProtected" => $data['anticheat'],
+				"BuildUniqueId" => $data['build'],
+				"OwningUserName" => $data['owner'],
+				"IpAddress" => $data['ipaddress'],
+				"Port" => $data['port'],
 				"Settings" => array(
 					"MapName" => array(
 						"Type"  => "String",
@@ -350,11 +359,11 @@
 					),
 					"MARS_SERVERID" => array(
 						"Type" => "String",
-						"Value"> $data[0]['serverid']
+						"Value"> $data['serverid']
 					),
 					"LIMBIC_TARGET_PLATFORMS" => array(
 						"Type"  => "String",
-						"Value" => $data[0]['platform']
+						"Value" => $data['platform']
 					),
 					"MARS_AUDIENCE" => array(
 						"Type" => "String",
@@ -362,15 +371,15 @@
 					),
 					"MARS_GAMESERVER_MODE" => array(
 						"Type" => "String",
-						"Value" => $data[0]['mode'],
+						"Value" => $data['mode'],
 					),
 					"MARS_GAMESERVER_TYPE" => array(
 						"Type" => "Bool",
-						"Value" => $data[0]['gametype']
+						"Value" => $data['gametype']
 					),
 					"Password" => array(
 						"Type" => "Bool",
-						"Value" => $data[0]['password']
+						"Value" => $data['password']
 					)
 				)
 			);

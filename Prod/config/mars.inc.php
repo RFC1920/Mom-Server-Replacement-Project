@@ -323,39 +323,38 @@
 		$servers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 		$i = 0;
-		foreach($servers as $server)
+		foreach($servers as $data)
 		{
 			$output[$i] = array(
-				'Name' => $server['name'],
-				'IPAddress' => $server['ipaddress'],
-				'Port' => $server['port'],
-				"SessionId" => $server['sessionid'],
-				"NumPublicConnections" => 2,
-				"NumPrivateConnections" => 2,
-				"ShouldAdvertise" => true,
-				"AllowJoinInProgress" => true,
-				"IsLANMatch" => true,
-				"IsDedicated" => true,
-				"UsesStats" => false,
-				"AllowInvites" => true,
-				"UsesPresence" => false,
-				"AllowJoinViaPresence" => true,
-				"AllowJoinViaPresenceFriendsOnly" => false,
-				"AntiCheatProtected" => true,
-				"BuildUniqueId" => "114912",
-				"OwningUserName" => "rfcmom",
+				"SessionId" => $data[0]['sessionid'],
+				"NumPublicConnections" => $data[0]['numpub'],
+				"NumPrivateConnections" => $data[0]['numpriv'],
+				"ShouldAdvertise" => $data[0]['shouldadv'],
+				"AllowJoinInProgress" => $data[0]['allowjoin'],
+				"IsLANMatch" => $data[0]['islan'],
+				"IsDedicated" => $data[0]['isded'],
+				"UsesStats" => $data[0]['usestats'],
+				"AllowInvites" => $data[0]['allowinv'],
+				"UsesPresence" => $data[0]['usepres'],
+				"AllowJoinViaPresence" => $data[0]['allowpresjoin'],
+				"AllowJoinViaPresenceFriendsOnly" => $data[0]['allowjoinpresfr'],
+				"AntiCheatProtected" => $data[0]['anticheat'],
+				"BuildUniqueId" => $data[0]['build'],
+				"OwningUserName" => $data[0]['owner'],
+				"IpAddress" => $data[0]['ipaddress'],
+				"Port" => $data[0]['port'],
 				"Settings" => array(
 					"MapName" => array(
-						"Type" => "String",
+						"Type"  => "String",
 						"Value" => "Untitled_0"
 					),
 					"MARS_SERVERID" => array(
 						"Type" => "String",
-						"Value" => "mom_rfc_01"
+						"Value"> $data[0]['serverid']
 					),
 					"LIMBIC_TARGET_PLATFORMS" => array(
-						"Type" => "String",
-						"Value" => "steam"
+						"Type"  => "String",
+						"Value" => $data[0]['platform']
 					),
 					"MARS_AUDIENCE" => array(
 						"Type" => "String",
@@ -363,15 +362,15 @@
 					),
 					"MARS_GAMESERVER_MODE" => array(
 						"Type" => "String",
-						"Value" => "PVE"
+						"Value" => $data[0]['mode'],
 					),
 					"MARS_GAMESERVER_TYPE" => array(
 						"Type" => "Bool",
-						"Value" => true
+						"Value" => $data[0]['gametype']
 					),
 					"Password" => array(
 						"Type" => "Bool",
-						"Value" => true
+						"Value" => $data[0]['password']
 					)
 				)
 			);

@@ -18,8 +18,9 @@
     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
 */
 
-	if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
-	if(!@htmlspecialchars($_GET["platform"]) == "STEAM") exit;
+//	if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
+	if (@$_GET["platform"] = "") exit;
+	//if(!@htmlspecialchars($_GET["platform"]) == "STEAM") exit;
 	if(!@htmlspecialchars($_GET["build"]) == "114912") exit;
 
 	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");

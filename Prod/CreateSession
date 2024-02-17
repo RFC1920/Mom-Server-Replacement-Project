@@ -25,6 +25,7 @@
 
 	$jsonString = file_get_contents("php://input");
 	$resp = json_decode($jsonString, false);
+	if ($debug) file_put_contents("/tmp/createsession.log", $jsonString);
 
 	$serverid = $resp->Settings->MARS_SERVERID->Value;
 	$sessionid = $resp->SessionId;

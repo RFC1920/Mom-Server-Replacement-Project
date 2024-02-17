@@ -111,6 +111,11 @@
 		$allowpresjoin = $data->AllowJoinViaPresence ? 1 : 0;
 		$allowjoinpresfr = $data->AllowJoinViaPresenceFriendsOnly ? 1 : 0;
 		$anticheat  = $data->AntiCheatProtected ? 1 : 0;
+		$password = 0;
+		if (property_exists($data, 'Password'))
+		{
+			$password = $data->Settings->Password->Value == "" ? 0 : 1;
+		}
 
 		$time = time();
 
@@ -126,7 +131,7 @@
 			. "'" . $data->Settings->MARS_SERVERID->Value . "',"
 			. "'" . $data->Settings->LIMBIC_TARGET_PLATFORMS->Value . "', '" . $data->Settings->MARS_AUDIENCE->Value . "',"
 			. "'" . $data->Settings->MARS_GAMESERVER_MODE->Value . "', " . $data->Settings->MARS_GAMESERVER_TYPE->Value . ", "
-			. $data->Settings->Password->Value . ", '$time', $active)"
+			. $password . ", '$time', $active)"
 		);
 		try
 		{
@@ -371,50 +376,47 @@
 
 		//$servers = $stmt->fetchAll();//PDO::FETCH_ASSOC);
 
-		$output["MoM"] = array(
-			"SessionId" => 0,
-			"Online" => true,
-			"Status" => "Online",
-			"MomStatus" => true,
-			"AntiCheatProtected" => 0,
-			"IsDedicated" => false,
-			"IsLANMatch" => false,
-			"IsMaster" => true,
-			"AllowInvites" => false,
-			"BuildUniqueId" => 114912,
-			"OwningUserName" => "Limbic",
-			"ShouldAdvertise" => true,
-			"Settings" => array(
-				"MapName" => array(
-					"Type"  => "String",
-					"Value" => ""
-				),
-				"MARS_SERVERID" => array(
-					"Type" => "String",
-					"Value"> "Mom"
-				),
-				"LIMBIC_TARGET_PLATFORMS" => array(
-					"Type"  => "String",
-					"Value" => "All"
-				),
-				"MARS_AUDIENCE" => array(
-					"Type" => "String",
-					"Value" => "MoM"
-				),
-				"MARS_GAMESERVER_MODE" => array(
-					"Type" => "String",
-					"Value" => "PvP"
-				),
-				"MARS_GAMESERVER_TYPE" => array(
-					"Type" => "Bool",
-					"Value" => true
-				),
-				"Password" => array(
-					"Type" => "Bool",
-					"Value" => false
-				)
-			)
-		);
+		//$output["MoM"] = array(
+		//	"SessionId" => 0,
+		//	"AntiCheatProtected" => 0,
+		//	"IsDedicated" => false,
+		//	"IsLANMatch" => false,
+		//	"IsMaster" => true,
+		//	"AllowInvites" => false,
+		//	"BuildUniqueId" => 114912,
+		//	"OwningUserName" => "Limbic",
+		//	"ShouldAdvertise" => true,
+		//	"Settings" => array(
+		//		"MapName" => array(
+		//			"Type"  => "String",
+		//			"Value" => ""
+		//		),
+		//		"MARS_SERVERID" => array(
+		//			"Type" => "String",
+		//			"Value"> "Mom"
+		//		),
+		//		"LIMBIC_TARGET_PLATFORMS" => array(
+		//			"Type"  => "String",
+		//			"Value" => "All"
+		//		),
+		//		"MARS_AUDIENCE" => array(
+		//			"Type" => "String",
+		//			"Value" => "MoM"
+		//		),
+		//		"MARS_GAMESERVER_MODE" => array(
+		//			"Type" => "String",
+		//			"Value" => "PvP"
+		//		),
+		//		"MARS_GAMESERVER_TYPE" => array(
+		//			"Type" => "Bool",
+		//			"Value" => true
+		//		),
+		//		"Password" => array(
+		//			"Type" => "Bool",
+		//			"Value" => false
+		//		)
+		//	)
+		//);
 		while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
 			$serverid = $data['serverid'];
@@ -423,16 +425,16 @@
 				"SessionId" => $data['sessionid'],
 				"NumPublicConnections" => $data['numpub'],
 				"NumPrivateConnections" => $data['numpriv'],
-				"ShouldAdvertise" => $data['shouldadv'],
-				"AllowJoinInProgress" => $data['allowjoin'],
-				"IsLANMatch" => $data['islan'],
-				"IsDedicated" => $data['isded'],
-				"UsesStats" => $data['usestats'],
-				"AllowInvites" => $data['allowinv'],
-				"UsesPresence" => $data['usepres'],
-				"AllowJoinViaPresence" => $data['allowpresjoin'],
-				"AllowJoinViaPresenceFriendsOnly" => $data['allowjoinpresfr'],
-				"AntiCheatProtected" => $data['anticheat'],
+				"ShouldAdvertise" => $data['shouldadv'] == 1 ? true : false,
+				"AllowJoinInProgress" => $data['allowjoin'] == 1 ? true : false,
+				"IsLANMatch" => $data['islan'] == 1 ? true : false,
+				"IsDedicated" => $data['isded'] == 1 ? true : false,
+				"UsesStats" => $data['usestats'] == 1 ? true : false,
+				"AllowInvites" => $data['allowinv'] == 1 ? true : false,
+				"UsesPresence" => $data['usepres'] == 1 ? true : false,
+				"AllowJoinViaPresence" => $data['allowpresjoin'] == 1 ? true : false,
+				"AllowJoinViaPresenceFriendsOnly" => $data['allowjoinpresfr'] == 1 ? true : false,
+				"AntiCheatProtected" => $data['anticheat'] == 1 ? true : false,
 				"BuildUniqueId" => $data['build'],
 				"OwningUserName" => $data['owner'],
 				"IpAddress" => $data['ipaddress'],
@@ -444,7 +446,7 @@
 					),
 					"MARS_SERVERID" => array(
 						"Type" => "String",
-						"Value"> $data['serverid']
+						"Value" => $data['serverid']
 					),
 					"LIMBIC_TARGET_PLATFORMS" => array(
 						"Type"  => "String",
@@ -460,11 +462,11 @@
 					),
 					"MARS_GAMESERVER_TYPE" => array(
 						"Type" => "Bool",
-						"Value" => $data['gametype']
+						"Value" => $data['gametype'] == 1 ? true : false
 					),
 					"Password" => array(
 						"Type" => "Bool",
-						"Value" => $data['password']
+						"Value" => $data['password'] == 1 ? true : false
 					)
 				)
 			);

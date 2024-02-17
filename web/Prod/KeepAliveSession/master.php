@@ -1,6 +1,6 @@
 <?php
 /*
-    MoM Server Replacement Project
+    MoM Data Server Replacement Project
     Copyright (c) 2024 RFC1920 <desolationoutpostpve@gmail.com>
 
     This program is free software; you can redistribute it and/or
@@ -21,8 +21,7 @@
 	if ($_SERVER['REQUEST_METHOD'] === 'PATCH')
 	{
 		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
-		$x = dirname(__DIR__);
-		`echo $x >> /tmp/dirname`;
+
 		include(dirname(__DIR__) . "/config/mars.inc.php");
 		if ($debug) `echo "KeepAliveSession received patch request" >> /tmp/keepalivesession`;
 

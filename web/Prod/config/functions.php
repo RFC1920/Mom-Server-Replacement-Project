@@ -1,6 +1,6 @@
 <?php
 /*
-    MoM Server Replacement Project
+    MoM Data Server Replacement Project
     Copyright (c) 2024 RFC1920 <desolationoutpostpve@gmail.com>
 
     This program is free software; you can redistribute it and/or
@@ -62,10 +62,6 @@
 			$sessString = 'null';
 		}
 
-		//if ($data->SessionId == "0")
-		//{
-		//	$sessionid = CreateSessionId();
-		//}
 		$servername = trim($data->Settings->MARS_SERVERID->Value);
 		$addr = trim($data->IpAddress);
 		$shouldadv = $data->ShouldAdvertise ? 1 : 0;
@@ -201,21 +197,6 @@
 		return $servers;
 	}
 
-	function CreateSessionId()
-	{
-		$id = rand(1, 65535);
-		return $id;
-		//$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		//$charactersLength = strlen($characters);
-		//$randomString = '';
-		//for ($i = 0; $i < $length; $i++)
-		//{
-		//	$randomString .= $characters[random_int(0, $charactersLength - 1)];
-		//}
-
-		//return md5($randomString);
-	}
-
 	function UpdateSession($servername, $id)
 	{
 		global $debug;
@@ -273,7 +254,7 @@
 		global $database;
 		global $keepalive_seconds;
 
-		// This will need to check session timestamps and deactivate servers who have not checked in since time() - $keepalive_seconds
+		// Check session timestamps and deactivate servers who have not checked in since time() - $keepalive_seconds
 		$stmt = $database->prepare("SELECT sessionid, timestamp FROM mom_servers");
 		try
 		{
@@ -327,6 +308,7 @@
 
 	function GetAllServers()
 	{
+		// Work in progress - last major hurdle 17 Feb 2024.
 		global $debug;
 		global $database;
 		$output = array();
@@ -440,8 +422,4 @@
 		}
 		return $output;
 	}
-
-	//DeactivateAll();
-	//EditServer("RFCs Server", "10.0.1.1", "7777");
-	//GetAllServers();
 

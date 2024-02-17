@@ -18,29 +18,32 @@
     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
 */
 
-	if(!@is_array($_POST)) exit;
-	if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
+	if ($_SERVER['REQUEST_METHOD'] === 'POST')
+	{
+		//if(!@is_array($_POST)) exit;
+		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
 
-	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
+		include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
 
-	$jsonString = file_get_contents("php://input");
-	$resp = json_decode($jsonString, false);
-	if ($debug) file_put_contents("/tmp/createsession.log", $jsonString);
+		$jsonString = file_get_contents("php://input");
+		$resp = json_decode($jsonString, false);
+		if ($debug) file_put_contents("/tmp/createsession.log", $jsonString);
 
-	$serverid = $resp->Settings->MARS_SERVERID->Value;
-	$sessionid = $resp->SessionId;
-	if ($debug) `echo "Got ServerId: $serverid" >> /tmp/progress.log`;
+		$serverid = $resp->Settings->MARS_SERVERID->Value;
+		$sessionid = $resp->SessionId;
+		if ($debug) `echo "Got ServerId: $serverid" >> /tmp/progress.log`;
 
-	$sessionid = EditServer($resp);
-	if ($debug) `echo "Got SessionId: $sessionid" >> /tmp/progress.log`;
+		$sessionid = EditServer($resp);
+		if ($debug) `echo "Got SessionId: $sessionid" >> /tmp/progress.log`;
 
-	$resp->SessionId = $sessionid;// GetSessionId($serverid);
-	//$resp->IpAddress = $_SERVER['REMOTE_ADDR'];
+		$resp->SessionId = $sessionid;// GetSessionId($serverid);
+		//$resp->IpAddress = $_SERVER['REMOTE_ADDR'];
 
-	$json = json_encode($resp, false);
-	if ($debug) file_put_contents("/tmp/resp.log", $json);
+		$json = json_encode($resp, false);
+		if ($debug) file_put_contents("/tmp/resp.log", $json);
 
-	header('Content-Type: application/json; charset=utf-8');
-	header("Content-Length: " . strlen($json));
-	echo $json;
+		header('Content-Type: application/json; charset=utf-8');
+		header("Content-Length: " . strlen($json));
+		echo $json;
+	}
 ?>

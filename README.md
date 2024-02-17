@@ -164,11 +164,11 @@ security.limit_extensions =
 }
 ```
 
-  ...and we return:
+  ...and we return, e.g.:
 
 ```json
 {
-  "SessionId": "00d261abe483df50e6963aad446b202a",
+  "SessionId": "3",
   "NumPublicConnections": 2,
   "NumPrivateConnections": 0,
   "ShouldAdvertise": false,
@@ -218,3 +218,4 @@ security.limit_extensions =
 }
 ```
 
+Later, the server will call UpdateSession, and we update their sessionid.

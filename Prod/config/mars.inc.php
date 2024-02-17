@@ -295,6 +295,48 @@
 		}
 	}
 
+	function SessionMaintenance()
+	{
+		global $debug;
+		global $database;
+		global $keepalive_seconds;
+
+		// This will need to check session timestamps and deactivate servers who have not checked in since time() - $keepalive_seconds
+		$stmt = $database->prepare("SELECT sessionid, timestamp FROM mom_servers");
+		try
+		{
+			$stmt->execute();
+		}
+		catch (PDOException $e)
+		{
+			if ($debug) file_put_contents("/tmp/gettimestamps_error", $e->getMessage());
+		}
+
+		$todelete = array();
+
+		while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
+		{
+			$old = $data['timestamp'];
+			$sess = $data['sessionid'];
+			$time = time();
+			if ($old < ($time - $keepalive_seconds))
+			{
+				array_push($todel, $sessionid);
+			}
+		}
+
+		$delete = implode(',', $todel);
+		$stmt = $database->prepare("UPDATE mom_servers SET active=0 WHERE sessionid IN ($delete)");
+		try
+		{
+			$stmt->execute();
+		}
+		catch (PDOException $e)
+		{
+			if ($debug) file_put_contents("/tmp/setinactive_error", $e->getMessage());
+		}
+	}
+
 	function DeactivateSession($sessionid)
 	{
 		global $debug;
@@ -329,11 +371,54 @@
 
 		//$servers = $stmt->fetchAll();//PDO::FETCH_ASSOC);
 
-		$i = 0;
+		$output["MoM"] = array(
+			"SessionId" => 0,
+			"Online" => true,
+			"Status" => "Online",
+			"MomStatus" => true,
+			"AntiCheatProtected" => 0,
+			"IsDedicated" => false,
+			"IsLANMatch" => false,
+			"IsMaster" => true,
+			"AllowInvites" => false,
+			"BuildUniqueId" => 114912,
+			"OwningUserName" => "Limbic",
+			"ShouldAdvertise" => true,
+			"Settings" => array(
+				"MapName" => array(
+					"Type"  => "String",
+					"Value" => ""
+				),
+				"MARS_SERVERID" => array(
+					"Type" => "String",
+					"Value"> "Mom"
+				),
+				"LIMBIC_TARGET_PLATFORMS" => array(
+					"Type"  => "String",
+					"Value" => "All"
+				),
+				"MARS_AUDIENCE" => array(
+					"Type" => "String",
+					"Value" => "MoM"
+				),
+				"MARS_GAMESERVER_MODE" => array(
+					"Type" => "String",
+					"Value" => "PvP"
+				),
+				"MARS_GAMESERVER_TYPE" => array(
+					"Type" => "Bool",
+					"Value" => true
+				),
+				"Password" => array(
+					"Type" => "Bool",
+					"Value" => false
+				)
+			)
+		);
 		while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
 			$serverid = $data['serverid'];
-			//if ($serverid == "") continue;
+			if ($serverid == "") continue;
 			$output[$serverid] = array(
 				"SessionId" => $data['sessionid'],
 				"NumPublicConnections" => $data['numpub'],
@@ -383,7 +468,6 @@
 					)
 				)
 			);
-			$i++;
 		}
 		return $output;
 	}

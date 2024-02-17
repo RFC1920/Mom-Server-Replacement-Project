@@ -24,6 +24,7 @@ This is not a simple setup for everyone.
   - Generate a cert with the above hostname that the server machine will trust.  In my case, I was able to create a cert using my internal Windows Cert Authority, but any CA the machine trusts appears to work.
   - Configure Apache similar to the following:
 
+### Apache
 ```
 <VirtualHost *:443>
     ServerName agclxre5zl.execute-api.eu-central-1.amazonaws.com
@@ -44,6 +45,55 @@ This is not a simple setup for everyone.
 </VirtualHost>
 ```
 
+### NGINX
+
+Uncomment the ssl section in the default nginx.conf and adjust as follows.  You will need a 'valid' cert and key (that you trust).
+```
+    server {
+        listen       443 ssl http2;
+        listen       [::]:443 ssl http2;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        ssl_certificate "/etc/pki/nginx/agclxre5zl.execute-api.eu-central-1.amazonaws.com.pem";
+        ssl_certificate_key "/etc/pki/nginx/private/agclxre5zl.execute-api.eu-central-1.amazonaws.com.key";
+        ssl_session_cache shared:SSL:1m;
+        ssl_session_timeout  10m;
+        ssl_ciphers PROFILE=SYSTEM;
+        ssl_prefer_server_ciphers on;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        error_page 404 /404.html;
+        location = /404.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+
+        location / {
+            try_files $uri $uri/ @extensionless-php;
+            root           /usr/share/nginx/html;
+            fastcgi_pass   unix:/run/php-fpm/www.sock;
+            #fastcgi_index  index.php;
+            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            include        fastcgi_params;
+        }
+
+        # These two are important for ensuring we run the right scripts (no .php except for master.php.
+        location /Prod/KeepAliveSession {
+            rewrite ^(.*)$ master.php last;
+        }
+
+        location @extensionless-php {
+            rewrite ^(.*)$ $1.php last;
+        }
+```
+
+## More notes
+
   - Note that I am suggesting that you use php-fpm to run these scripts.  The "FilesMatch ^" config is part of what's need to serve php in non .php files
   - Configure php-fpm using the file targeting your server and socket file, e.g. "/etc/php-fpm.d/www.conf".  Add the following line at the bottom of the file and restart php-fpm:
 
@@ -53,6 +103,7 @@ security.limit_extensions =
 
   - Unpack the contents of the Prod directory from this repo into the root of your web server.
   - For the above configuration, this would end up as /var/www/mars/Prod.
+
 
 ## Protocol Info
   The server and clients appear to exchange json data, which is fairly simple if you know the format.

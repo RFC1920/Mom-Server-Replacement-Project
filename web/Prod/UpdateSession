@@ -1,0 +1,55 @@
+<?php
+	/*
+	 MoM Server Replacement Project
+	 Copyright (c) 2024 RFC1920 <desolationoutpostpve@gmail.com>
+
+	 This program is free software; you can redistribute it and/or
+	 modify it under the terms of the GNU General Public License v2.0.
+
+	 This program is distributed in the hope that it will be useful,
+	 but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 GNU General Public License for more details.
+
+	 You should have received a copy of the GNU General Public License
+	 along with this program; if not, write to the Free Software
+	 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+	 Optionally you can also view the license at <http://www.gnu.org/licenses/>.
+	 */
+	//file_put_contents("/tmp/client.log", print_r($_SERVER, true));
+	
+	if ($_SERVER['REQUEST_METHOD'] === 'PATCH')
+	{
+		//`echo "UpdateSession received patch request" >> /tmp/updatesession`;
+		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
+		include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
+
+		//$_PATCH = patchMethod();
+		parse_str(file_get_contents('php://input'), $patch);
+		//parse_raw_http_request($_PATCH);
+
+		if ($debug) file_put_contents("/tmp/update.txt", print_r($patch, true));
+		$data = key($patch);
+		$req = json_decode($data, false);
+		if ($debug) file_put_contents("/tmp/json", $req);
+
+		$serverid = $req->Settings->MARS_SERVERID->Value;
+		if ($debug) `echo "Got serverid $serverid" >> /tmp/updateserver`;
+		$sessionId = GetSessionId($serverid);
+		if ($debug) `echo "Got sessionid $sessionId" >> /tmp/updateserver`;
+
+		if ($sessionId != "")
+		{
+			//UpdateSession($serverid, $req->SessionId);
+			$sessionid = $req->SessionId;
+			if ($debug) `echo "Updating sessionid to $sessionId" >> /tmp/updateserver`;
+			UpdateSession($serverid, $sessionid);
+		}
+
+		header('Content-Type: application/json; charset=utf-8');
+		$json = json_encode($req);
+		header("Content-Length: " . strlen($json));
+		echo $json;
+	}
+?>

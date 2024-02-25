@@ -22,5 +22,5 @@
 	}
 
 	echo "------------------------------------------------------------------------------------------------\n";
-	echo "Total active players $total.  Available free slots $avail\n";
+	echo "Total active players $total -- Available free slots $avail\n";
 

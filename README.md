@@ -5,6 +5,7 @@ Scripts and other things for the game Memories of Mars by Limbic Entertainment a
 This should be considered a work in progress and partially working or garbage depending on your perspective.
 
 The goal is to replace the missing server that went down on 13 February, 2024.
+It might also be usable to replace the function of these servers when the game goes offline 25 June, 2024.
 
 This server, or beacon host, is required for server registration, and for clients to find servers, etc.
 

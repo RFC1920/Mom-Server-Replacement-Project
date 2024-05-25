@@ -20,7 +20,6 @@
 
 	if ($_SERVER['REQUEST_METHOD'] === 'POST')
 	{
-		//if(!@is_array($_POST)) exit;
 		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
 
 		include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
@@ -36,10 +35,13 @@
 		$sessionid = EditServer($resp);
 		if ($debug) `echo "Got SessionId: $sessionid" >> /tmp/progress.log`;
 
-		$resp->SessionId = $sessionid;// GetSessionId($serverid);
-		//$resp->IpAddress = $_SERVER['REMOTE_ADDR'];
-
-		$json = json_encode($resp, false);
+		$json = <<< EOF
+{
+    "SessionId": "$sessionid"
+}
+EOF;
+		//$resp->SessionId = $sessionid;// GetSessionId($serverid);
+		//$json = json_encode($resp, false);
 		if ($debug) file_put_contents("/tmp/resp.log", $json);
 
 		header('Content-Type: application/json; charset=utf-8');

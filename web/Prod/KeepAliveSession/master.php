@@ -36,7 +36,11 @@
 			if ($debug) `echo "KeepAliveSession for $ipaddr, $sessionId" >> /tmp/keepalivesession`;
 			KeepAliveSession($sessionId, $ipaddr);
 			$json = GetSessionData($sessionId, $ipaddr);
-			if ($debug) `echo "JSON Returning for $ipaddr, $sessionId" >> /tmp/keepalivesession`;
+			if ($debug)
+			{
+				`echo "JSON Returning for $ipaddr, $sessionId" >> /tmp/keepalivesession`;
+				file_put_contents("/tmp/keepalivesession.log", $json);
+			}
 		}
 
 		if ($json != "")

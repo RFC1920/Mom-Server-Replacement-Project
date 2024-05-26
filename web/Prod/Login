@@ -19,8 +19,8 @@
 */
 
 	include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
-	include(dirname(__DIR__) . "/Prod/config/openid.php");
-	include(dirname(__DIR__) . "/Prod/config/SteamConfig.php");
+	//include(dirname(__DIR__) . "/Prod/config/openid.php");
+	//include(dirname(__DIR__) . "/Prod/config/SteamConfig.php");
 
 	$jsonString = file_get_contents("php://input");
 	$req = json_decode($jsonString, false);
@@ -34,18 +34,31 @@
 		//$json = '{ "response": { "success" : { "errorcode" : 0, "errordesc": "Valid ticket"}}}';
 		//$json = '{ "Current State": { "ClientSideSteamAuth": "1", "ClientAuthenticatable": "1" } }';
 		//$resp = '{ "SessionResult": "OK", "Actor": "' . $req->steamaccid . '" }';
-		$json = json_encode($resp, false);
-//		if ($debug) file_put_contents("/tmp/resp.log", $json);
+		$json = '{ "SessionId": "11", "Result": "0" }';
+		$json = <<< EOF
+{
+  "id": 11,
+  "game_id": 114912,
+  "email": "test@test.io",
+  "created_at": "2024-02-20T04:12:34.612346459Z",
+  "updated_at": "2024-02-20T04:12:34.612346459Z",
+  "deleted_at": null,
+  "validated_at": null,
+  "session_token": "afccd38d-09d5-48aa-8235-b9c4c9151596"
+}
+EOF;
+		//		$json = json_encode($resp, false);
+		if ($debug) file_put_contents("/tmp/loginresp.log", $json);
 
 		header('Content-Type: application/json; charset=utf-8');
 		header("Content-Length: " . strlen($json));
 		echo $json;
 	}
-		/* Example login:
-        {
-            "authtype": "steam",
-            "steamaccid": "76561198907303196",
-            "steamticket": "1400109230c90e357003c0560463af1401001001f5ded0651800000001000000020000003f59e47e91bdf59d692949021b000000b800000038000000040000000463af1401001001c2d409007f58a5634c01a8c0000000002eb4c865ae63e4650100fac10200010036b20d000000000018b3522785003aecbf2f6e4df0ecb9f1e0c34b2f065612ba8241ea933779ee557b64aa7e3c46e6a369a6148159fe969286dd895cdd795ac23b4b7526a7cec418bdbe0b7711591367d8749b24e53c91c52ba4f481c0b04046baddf6854fa098d731e7bc67f24b2834aa00ba4f9df63d9cf645b76df265128340003a3054e2994a"
-        }
-	*/
+	/* Example login:
+	 {
+		 "authtype": "steam",
+		 "steamaccid": "76561198907303196",
+		 "steamticket": "1400109230c90e357003c0560463af1401001001f5ded0651800000001000000020000003f59e47e91bdf59d692949021b000000b800000038000000040000000463af1401001001c2d409007f58a5634c01a8c0000000002eb4c865ae63e4650100fac10200010036b20d000000000018b3522785003aecbf2f6e4df0ecb9f1e0c34b2f065612ba8241ea933779ee557b64aa7e3c46e6a369a6148159fe969286dd895cdd795ac23b4b7526a7cec418bdbe0b7711591367d8749b24e53c91c52ba4f481c0b04046baddf6854fa098d731e7bc67f24b2834aa00ba4f9df63d9cf645b76df265128340003a3054e2994a"
+	 }
+	 */
 ?>

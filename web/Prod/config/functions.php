@@ -62,6 +62,7 @@
 			$sessString = 'null';
 		}
 
+		if ($debug) `echo GOT HERE 1 >> /tmp/editserver.log`;
 		$servername = trim($data->Settings->MARS_SERVERID->Value);
 		$addr = trim($data->IpAddress);
 		$shouldadv = $data->ShouldAdvertise ? 1 : 0;
@@ -74,28 +75,36 @@
 		$allowpresjoin = $data->AllowJoinViaPresence ? 1 : 0;
 		$allowjoinpresfr = $data->AllowJoinViaPresenceFriendsOnly ? 1 : 0;
 		$anticheat  = $data->AntiCheatProtected ? 1 : 0;
+		$port       = @$data->Settings->Port != 0 ? $data->Settings->Port : 7777;
+		$beacon     = @$data->Settings->BeaconPort != 0 ? $data->Settings->BeaconPort : 15000;
+		//$type       = @$data->Settings->MARS_GAMESERVER_TYPE->Value != 0 ? $data->Settings->MARS_GAMESERVER_TYPE->Value : 1;
+		$type = 1;
 		$password = 0;
 		if (property_exists($data, 'Password'))
 		{
 			$password = $data->Settings->Password->Value == "" ? 0 : 1;
 		}
 
+		if ($debug) `echo GOT HERE 2 >> /tmp/editserver.log`;
 		$time = time();
 
 		$stmt = $database->prepare("DELETE FROM mom_servers WHERE serverid='$servername'");
 		$stmt->execute();
 		$active = $sessionid > 0 ? 1 : 0;
 
-		$stmt = $database->prepare("INSERT OR REPLACE INTO mom_servers VALUES("
+		if ($debug) `echo GOT HERE 3 >> /tmp/editserver.log`;
+		$sql = "INSERT OR REPLACE INTO mom_servers VALUES("
 			. "$sessString, '" . $data->NumPublicConnections . "', '" . $data->NumPrivateConnections . "', $shouldadv, $allowjoin, $islan, $isded, "
 			. "$usestats, $allowinv, $usepres, $allowpresjoin, $allowjoinpresfr, $anticheat,"
-			. "'" . $data->BuildUniqueId . "', '" . $data->OwningUserName . "', '" . $addr . "', "
-			. $data->Port . ", '" . $data->Settings->MapName->Value . "',"
+			. "'" . $data->BuildUniqueId . "', '" . RemoveTicks($data->OwningUserName) . "', '" . $addr . "', "
+			. $port . "," . $beacon . ", '" . $data->Settings->MapName->Value . "',"
 			. "'" . $data->Settings->MARS_SERVERID->Value . "',"
 			. "'" . $data->Settings->LIMBIC_TARGET_PLATFORMS->Value . "', '" . $data->Settings->MARS_AUDIENCE->Value . "',"
-			. "'" . $data->Settings->MARS_GAMESERVER_MODE->Value . "', " . $data->Settings->MARS_GAMESERVER_TYPE->Value . ", "
-			. $password . ", '$time', $active)"
-		);
+			. "'" . $data->Settings->MARS_GAMESERVER_MODE->Value . "', " . $type . ", "
+			. $password . ", '$time', $active)";
+
+		if ($debug) file_put_contents("/tmp/sql.log", $sql);
+		$stmt = $database->prepare($sql);
 		try
 		{
 			$stmt->execute();
@@ -106,6 +115,11 @@
 			if ($debug) file_put_contents("/tmp/editsvr_error", $e->getMessage());
 		}
 		return $sessionid;
+	}
+
+	function RemoveTicks($input)
+	{
+		return str_replace("'", '', $input);
 	}
 
 	function GetSessionData($sessionid, $ipaddr)
@@ -306,9 +320,40 @@
 		$stmt->execute();
 	}
 
+	function GetAllServersCrap()
+	{
+		global $debug;
+		global $database;
+		$output = array();
+
+		$stmt = $database->prepare("SELECT * FROM mom_servers WHERE active=1");
+		try
+		{
+			$stmt->execute();
+		}
+		catch (PDOException $e)
+		{
+			if ($debug) file_put_contents("/tmp/getall_error", $e->getMessage());
+		}
+
+		$output['Sessions'] = [];
+//		while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
+//		{
+//			$serverid = $data['serverid'];
+//			$sessionid = $data['sessionid'];
+//			if ($serverid == "") continue;
+//			$output['Sessions'][$sessionid] = array(
+//				"SessionId"  => $data['sessionid'],
+//				"UserId"     => $data['owner'],
+//				"IsLAN"      => $data['islan'],
+//				"IsPresence" => $data['usepres']
+//			);
+//		}
+		return $output;
+	}
+
 	function GetAllServers()
 	{
-		// Work in progress - last major hurdle 17 Feb 2024.
 		global $debug;
 		global $database;
 		$output = array();
@@ -325,47 +370,70 @@
 
 		//$servers = $stmt->fetchAll();//PDO::FETCH_ASSOC);
 
-		//$output["MoM"] = array(
-		//	"SessionId" => 0,
-		//	"AntiCheatProtected" => 0,
-		//	"IsDedicated" => false,
-		//	"IsLANMatch" => false,
-		//	"IsMaster" => true,
-		//	"AllowInvites" => false,
-		//	"BuildUniqueId" => 114912,
-		//	"OwningUserName" => "Limbic",
-		//	"ShouldAdvertise" => true,
-		//	"Settings" => array(
-		//		"MapName" => array(
-		//			"Type"  => "String",
-		//			"Value" => ""
-		//		),
-		//		"MARS_SERVERID" => array(
-		//			"Type" => "String",
-		//			"Value"> "Mom"
-		//		),
-		//		"LIMBIC_TARGET_PLATFORMS" => array(
-		//			"Type"  => "String",
-		//			"Value" => "All"
-		//		),
-		//		"MARS_AUDIENCE" => array(
-		//			"Type" => "String",
-		//			"Value" => "MoM"
-		//		),
-		//		"MARS_GAMESERVER_MODE" => array(
-		//			"Type" => "String",
-		//			"Value" => "PvP"
-		//		),
-		//		"MARS_GAMESERVER_TYPE" => array(
-		//			"Type" => "Bool",
-		//			"Value" => true
-		//		),
-		//		"Password" => array(
-		//			"Type" => "Bool",
-		//			"Value" => false
-		//		)
-		//	)
-		//);
+		/*"SessionId": "1792890477",
+            "AllowInvites": true,
+            "AllowJoinInProgress": true,
+            "AllowJoinViaPresence": true,
+            "AllowJoinViaPresenceFriendsOnly": false,
+            "AntiCheatProtected": false,
+            "IsDedicated": true,
+            "IsLANMatch": false,
+            "ShouldAdvertise": true,
+            "BuildUniqueId": "114912",
+            "UsesPresence": false,
+            "UsesStats": false,
+            "NumPrivateConnections": 0,
+            "NumPublicConnections": 10,
+            "NumOpenPublicConnections": 10,
+            "Settings": {
+                "BeaconPort": {
+                    "Type": "Int32",
+                    "Value": "29820"
+                },
+                "LIMBIC_TARGET_PLATFORMS": {
+                    "Type": "String",
+                    "Value": "steam"
+                },
+                "MARS_AUDIENCE": {
+                    "Type": "String",
+                    "Value": "MoM"
+                },
+                "MARS_GAMESERVER_MODE": {
+                    "Type": "String",
+                    "Value": "PVE"
+                },
+                "MARS_GAMESERVER_TYPE": {
+                    "Type": "Bool",
+                    "Value": true
+                },
+                "MARS_SERVERID": {
+                    "Type": "String",
+                    "Value": "GPortal_USEA1_STEAM_1281973"
+                },
+                "MapName": {
+                    "Type": "String",
+                    "Value": "Untitled_0"
+                },
+                "Password": {
+                    "Type": "Bool",
+                    "Value": true
+                },
+                "Region": {
+                    "Type": "String",
+                    "Value": "USEA1"
+                },
+                "SessionID": {
+                    "Type": "Int32",
+                    "Value": "1792890477"
+                }
+            },
+            "OwningUserName": "MoM CircleDCowboy",
+            "IpAddress": "176.57.143.77",
+            "Port": 29800,
+            "OfficialServer": false,
+            "PublicIpAddress": "176.57.143.77"
+        }
+		*/
 		while ($data = $stmt->fetch(PDO::FETCH_ASSOC))
 		{
 			$serverid = $data['serverid'];
@@ -389,6 +457,10 @@
 				"IpAddress" => $data['ipaddress'],
 				"Port" => $data['port'],
 				"Settings" => array(
+					"BeaconPort" => array(
+						"Type"  => "Int32",
+						"Value" => $data['beacon']
+					),
 					"MapName" => array(
 						"Type"  => "String",
 						"Value" => "Untitled_0"

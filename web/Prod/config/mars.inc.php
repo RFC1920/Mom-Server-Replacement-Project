@@ -40,7 +40,7 @@
 	{
 		$stmt = $database->prepare("CREATE TABLE mom_servers (sessionid integer primary key autoincrement, numpub varchar, numpriv varchar,
 			shouldadv bit, allowjoin bit, islan bit, isded bit, usestats bit, allowinv bit, usepres bit, allowpresjoin bit, allowjoinpresfr bit,
-			anticheat bit, build varchar, owner varchar, ipaddress varchar, port int, mapname varchar, serverid varchar, platform varchar,
+			anticheat bit, build varchar, owner varchar, ipaddress varchar, port int, beacon int, mapname varchar, serverid varchar, platform varchar,
 			audience varchar, mode varchar, gametype bit, password bit, timestamp varchar DEFAULT '0', active bit)"
 		);
 		$stmt->execute();

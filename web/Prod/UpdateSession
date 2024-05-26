@@ -22,7 +22,7 @@
 	if ($_SERVER['REQUEST_METHOD'] === 'PATCH')
 	{
 		//`echo "UpdateSession received patch request" >> /tmp/updatesession`;
-		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
+		if (!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
 		include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
 
 		//$_PATCH = patchMethod();

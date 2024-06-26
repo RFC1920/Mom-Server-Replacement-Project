@@ -55,14 +55,13 @@
 		global $debug;
 		global $database;
 		//$sessionid = "0";
-		$sessionid = $data->SessionId;
+		$sessionid = (int)$data->SessionId;
 		$sessString = $sessionid;
 		if ((int)$sessionid == 0)
 		{
 			$sessString = 'null';
 		}
 
-		if ($debug) `echo GOT HERE 1 >> /tmp/editserver.log`;
 		$servername = trim($data->Settings->MARS_SERVERID->Value);
 		$addr = trim($data->IpAddress);
 		$shouldadv = $data->ShouldAdvertise ? 1 : 0;
@@ -85,23 +84,19 @@
 			$password = $data->Settings->Password->Value == "" ? 0 : 1;
 		}
 
-		if ($debug) `echo GOT HERE 2 >> /tmp/editserver.log`;
+		file_put_contents('/tmp/data.txt', print_r($data, true));
 		$time = time();
-
-		$stmt = $database->prepare("DELETE FROM mom_servers WHERE serverid='$servername'");
-		$stmt->execute();
 		$active = $sessionid > 0 ? 1 : 0;
 
-		if ($debug) `echo GOT HERE 3 >> /tmp/editserver.log`;
 		$sql = "INSERT OR REPLACE INTO mom_servers VALUES("
-			. "$sessString, '" . $data->NumPublicConnections . "', '" . $data->NumPrivateConnections . "', $shouldadv, $allowjoin, $islan, $isded, "
-			. "$usestats, $allowinv, $usepres, $allowpresjoin, $allowjoinpresfr, $anticheat,"
-			. "'" . $data->BuildUniqueId . "', '" . RemoveTicks($data->OwningUserName) . "', '" . $addr . "', "
-			. $port . "," . $beacon . ", '" . $data->Settings->MapName->Value . "',"
-			. "'" . $data->Settings->MARS_SERVERID->Value . "',"
-			. "'" . $data->Settings->LIMBIC_TARGET_PLATFORMS->Value . "', '" . $data->Settings->MARS_AUDIENCE->Value . "',"
-			. "'" . $data->Settings->MARS_GAMESERVER_MODE->Value . "', " . $type . ", "
-			. $password . ", '$time', $active)";
+			. @"$sessString, '" . $data->NumPublicConnections . "', '" . $data->NumPrivateConnections . "', $shouldadv, $allowjoin, $islan, $isded, "
+			. @"$usestats, $allowinv, $usepres, $allowpresjoin, $allowjoinpresfr, $anticheat,"
+			. @"'" . $data->BuildUniqueId . "', '" . RemoveTicks($data->OwningUserName) . "', '" . $addr . "', "
+			. @$port . "," . $beacon . ", '" . $data->Settings->MapName->Value . "',"
+			. @"'" . $data->Settings->MARS_SERVERID->Value . "',"
+			. @"'" . $data->Settings->LIMBIC_TARGET_PLATFORMS->Value . "', '" . $data->Settings->MARS_AUDIENCE->Value . "',"
+			. @"'" . $data->Settings->MARS_GAMESERVER_MODE->Value . "', " . $type . ", "
+			. @$password . ", '$time', $active)";
 
 		if ($debug) file_put_contents("/tmp/sql.log", $sql);
 		$stmt = $database->prepare($sql);

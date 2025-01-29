@@ -18,17 +18,18 @@
     Optionally you can also view the license at <http://www.gnu.org/licenses/>.
 */
 
-	if ($_SERVER['REQUEST_METHOD'] === 'POST')
+	// Prod/GetUnlockedPatterns/0
+	if ($_SERVER['REQUEST_METHOD'] === 'GET')
 	{
 		if(!@str_starts_with($_SERVER['HTTP_USER_AGENT'], "Game/1.1.8.114912")) exit;
 
 		include(dirname(__DIR__) . "/Prod/config/mars.inc.php");
 
-		$jsonString = file_get_contents("php://input");
-		$resp = json_decode($jsonString, false);
-		if ($debug) file_put_contents("/tmp/getplayerdata.log", $jsonString);
+		//$jsonString = file_get_contents("php://input");
+		//$resp = json_decode($jsonString, false);
+		//if ($debug) file_put_contents("/tmp/getplayerdata.log", $jsonString);
+		//$serverid = $resp->Settings->MARS_SERVERID->Value;
 
-		$serverid = $resp->Settings->MARS_SERVERID->Value;
 		echo "{}"
 	}
 ?>

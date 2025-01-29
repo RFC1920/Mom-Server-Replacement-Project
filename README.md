@@ -13,10 +13,22 @@ This server, or beacon host, is required for server registration, and for client
   This folder contains most or all of what is required to answer requests from servers and clients
 
   - CreateSession -- This answers server requests and returns a session id sufficient for the server to start. (WORKING)
+  - Login
   - GetAllSessions -- For the client to receive an updated server list. (CURRENTLY CRASHES GAME)
   - KeepAliveSession/0 -- Both server and client query this for server status updates. (UNCLEAR)
   - GetPlayerData?accids=0&attribs=dev -- Server queries this for unknown data
   - GetUnlockedPatterns/0 -- Server queries this for unlock blueprints.  Unclear when or how these are saved - WIP
+
+  Potential other calls to be managed:
+
+  - Logout
+  - GenerateAuthTicket
+  - ValidateAuthTicket
+  - CreateAccount
+  - DeleteAccount
+  - GenerateEncryptionKey
+  - RequestEncryptionKey
+  - UpdateData
 
 ## Server Setup
 

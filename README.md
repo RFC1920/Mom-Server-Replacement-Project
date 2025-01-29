@@ -15,13 +15,16 @@ This server, or beacon host, is required for server registration, and for client
   - CreateSession -- This answers server requests and returns a session id sufficient for the server to start. (WORKING)
   - GetAllSessions -- For the client to receive an updated server list. (CURRENTLY CRASHES GAME)
   - KeepAliveSession/0 -- Both server and client query this for server status updates. (UNCLEAR)
+  - GetPlayerData?accids=0&attribs=dev -- Server queries this for unknown data
+  - GetUnlockedPatterns/0 -- Server queries this for unlock blueprints.  Unclear when or how these are saved - WIP
 
 ## Server Setup
 
 This is not a simple setup for everyone.
 
   - Add "agclxre5zl.execute-api.eu-central-1.amazonaws.com" to the hosts file on a machine where your server and client will be run.
-  - Add "l32aayf7lh.execute-api.eu-central-1.amazonaws.com" to the hosts file on a machine where your server and client will be run."
+  - Add "l32aayf7lh.execute-api.eu-central-1.amazonaws.com" to the hosts file on a machine where your server and client will be run.
+  - Add "39cb0ds2zb.execute-api.eu-central-1.amazonaws.com" to the hosts file on a machine where your server and client will be run.
   - Both server and client make requests to a web server, so this should point to a machine running Apache, NGINX, et al.
   - Generate a cert with the above hostname that the server machine will trust.  In my case, I was able to create a cert using my internal Windows Cert Authority, but any CA the machine trusts appears to work.
   - Configure Apache similar to the following with TWO hosts:
@@ -49,6 +52,23 @@ This is not a simple setup for everyone.
     ServerName l32aayf7lh.execute-api.eu-central-1.amazonaws.com
     SSLCertificateFile /etc/pki/tls/certs/l32aayf7lh.execute-api.eu-central-1.amazonaws.com.cert
     SSLCertificateKeyFile /etc/pki/tls/private/l32aayf7lh.execute-api.eu-central-1.amazonaws.com.key
+    DocumentRoot /var/www/mars/web
+    ErrorLog logs/mars_ssl_error_log
+    TransferLog logs/mars_ssl_access_log
+    <Directory "/var/www/mars/web">
+        AllowOverride All
+    </Directory>
+    <Location />
+        SSLRequireSSL
+    </Location>
+    <FilesMatch ^>
+        SetHandler "proxy:unix:/run/php-fpm/www.sock|fcgi://localhost/"
+    </FilesMatch>
+</VirtualHost>
+<VirtualHost *:443>
+    ServerName 39cb0ds2zb.execute-api.eu-central-1.amazonaws.com
+    SSLCertificateFile /etc/pki/tls/certs/39cb0ds2zb.execute-api.eu-central-1.amazonaws.com.cert
+    SSLCertificateKeyFile /etc/pki/tls/private/39cb0ds2zb.execute-api.eu-central-1.amazonaws.com.key
     DocumentRoot /var/www/mars/web
     ErrorLog logs/mars_ssl_error_log
     TransferLog logs/mars_ssl_access_log

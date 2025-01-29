@@ -146,6 +146,7 @@ Uncomment the ssl section in the default nginx.conf and adjust as follows.  You 
 
 ## More notes
 
+  - Scripts require at least php version 8.X
   - Note that I am suggesting that you use php-fpm to run these scripts.  The "FilesMatch ^" config is part of what's need to serve php in non .php files
   - Configure php-fpm using the file targeting your server and socket file, e.g. "/etc/php-fpm.d/www.conf".  Add the following line at the bottom of the file and restart php-fpm:
 

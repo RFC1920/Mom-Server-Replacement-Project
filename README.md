@@ -1,5 +1,7 @@
 #  MoM Server Replacement Project
 
+Please see ![Mom-Relive](https://github.com/drbermejor/MoM-Relive) for a now working system for client and server restoration!
+
 Scripts and other things for the game Memories of Mars by Limbic Entertainment and 505 games.
 
 This should be considered a work in progress and partially working or garbage depending on your perspective.
